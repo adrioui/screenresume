@@ -5,12 +5,13 @@
 package repositories
 
 import (
+	"database/sql"
 	"database/sql/driver"
 	"fmt"
 	"time"
 
 	"github.com/google/uuid"
-	"github.com/jackc/pgx/v5/pgtype"
+	"github.com/jackc/pgtype"
 )
 
 type ApplicationStage string
@@ -127,7 +128,7 @@ type CandidateSkill struct {
 	CandidateID     uuid.UUID      `json:"candidate_id"`
 	SkillID         uuid.UUID      `json:"skill_id"`
 	YearsExperience pgtype.Numeric `json:"years_experience"`
-	LastUsed        pgtype.Date    `json:"last_used"`
+	LastUsed        sql.NullTime   `json:"last_used"`
 }
 
 type Department struct {
@@ -138,13 +139,13 @@ type Department struct {
 }
 
 type File struct {
-	ID        uuid.UUID          `json:"id"`
-	Path      string             `json:"path"`
-	FileType  string             `json:"file_type"`
-	Checksum  string             `json:"checksum"`
-	CreatedAt time.Time          `json:"created_at"`
-	UpdatedAt time.Time          `json:"updated_at"`
-	DeletedAt pgtype.Timestamptz `json:"deleted_at"`
+	ID        uuid.UUID    `json:"id"`
+	Path      string       `json:"path"`
+	FileType  string       `json:"file_type"`
+	Checksum  string       `json:"checksum"`
+	CreatedAt time.Time    `json:"created_at"`
+	UpdatedAt time.Time    `json:"updated_at"`
+	DeletedAt sql.NullTime `json:"deleted_at"`
 }
 
 type JobRole struct {
@@ -152,8 +153,8 @@ type JobRole struct {
 	Title        string          `json:"title"`
 	DepartmentID uuid.UUID       `json:"department_id"`
 	Level        ExperienceLevel `json:"level"`
-	SalaryRange  pgtype.Text     `json:"salary_range"`
-	Location     pgtype.Text     `json:"location"`
+	SalaryRange  string          `json:"salary_range"`
+	Location     string          `json:"location"`
 	IsActive     bool            `json:"is_active"`
 	CreatedAt    time.Time       `json:"created_at"`
 	UpdatedAt    time.Time       `json:"updated_at"`
@@ -178,11 +179,11 @@ type ScreeningCriterium struct {
 }
 
 type ScreeningResult struct {
-	ID            uuid.UUID `json:"id"`
-	ApplicationID uuid.UUID `json:"application_id"`
-	ModelVersion  string    `json:"model_version"`
-	RawResponse   []byte    `json:"raw_response"`
-	ProcessedAt   time.Time `json:"processed_at"`
+	ID            uuid.UUID    `json:"id"`
+	ApplicationID uuid.UUID    `json:"application_id"`
+	ModelVersion  string       `json:"model_version"`
+	RawResponse   pgtype.JSONB `json:"raw_response"`
+	ProcessedAt   time.Time    `json:"processed_at"`
 }
 
 type Skill struct {

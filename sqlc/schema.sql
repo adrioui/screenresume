@@ -61,8 +61,8 @@ CREATE TABLE job_roles (
     title VARCHAR(255) NOT NULL,
     department_id UUID NOT NULL REFERENCES departments(id),
     level experience_level NOT NULL,
-    salary_range VARCHAR(255),
-    location VARCHAR(255),
+    salary_range VARCHAR(255) NOT NULL,
+    location VARCHAR(255) NOT NULL,
     is_active BOOLEAN NOT NULL DEFAULT true,
     created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
@@ -72,7 +72,7 @@ CREATE TABLE job_role_requirements (
     job_role_id UUID NOT NULL REFERENCES job_roles(id) ON DELETE CASCADE,
     skill_id UUID NOT NULL REFERENCES skills(id) ON DELETE CASCADE,
     required BOOLEAN NOT NULL DEFAULT true,
-    min_experience_years NUMERIC(3,1),
+    min_experience_years NUMERIC(3,1) NOT NULL,
     importance INT NOT NULL CHECK (importance BETWEEN 1 AND 5),
     PRIMARY KEY (job_role_id, skill_id)
 );

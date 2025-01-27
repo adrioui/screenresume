@@ -9,7 +9,6 @@ import (
 	"context"
 
 	"github.com/google/uuid"
-	"github.com/jackc/pgx/v5/pgtype"
 )
 
 const createJobRole = `-- name: CreateJobRole :one
@@ -25,8 +24,8 @@ type CreateJobRoleParams struct {
 	Title        string          `json:"title"`
 	DepartmentID uuid.UUID       `json:"department_id"`
 	Level        ExperienceLevel `json:"level"`
-	SalaryRange  pgtype.Text     `json:"salary_range"`
-	Location     pgtype.Text     `json:"location"`
+	SalaryRange  string          `json:"salary_range"`
+	Location     string          `json:"location"`
 	IsActive     bool            `json:"is_active"`
 }
 
@@ -141,8 +140,8 @@ type UpdateJobRoleParams struct {
 	Title        string          `json:"title"`
 	DepartmentID uuid.UUID       `json:"department_id"`
 	Level        ExperienceLevel `json:"level"`
-	SalaryRange  pgtype.Text     `json:"salary_range"`
-	Location     pgtype.Text     `json:"location"`
+	SalaryRange  string          `json:"salary_range"`
+	Location     string          `json:"location"`
 	IsActive     bool            `json:"is_active"`
 }
 
