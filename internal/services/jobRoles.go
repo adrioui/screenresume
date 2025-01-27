@@ -159,6 +159,7 @@ func (s *JobRoleServiceImpl) CreateJobRoles(ctx context.Context, input models.Jo
 		return models.JobRoles{}, fmt.Errorf("failed to create jobRole: %w", err)
 	}
 
+	fmt.Println(params)
 	return toJobRolesDTO(dbJobRole), nil
 }
 
