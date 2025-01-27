@@ -28,11 +28,15 @@ func main() {
 	departmentsService := services.NewDepartmentService(store)
 	departmentsController := controller.DepartmentsResources{DepartmentsService: departmentsService}
 
+	candidatesService := services.NewCandidateService(store)
+	candidatesController := controller.CandidatesResources{CandidatesService: candidatesService}
+
 	s := fuego.NewServer()
 
 	filesController.Routes(s)
 	jobRolesController.Routes(s)
 	departmentsController.Routes(s)
+	candidatesController.Routes(s)
 
 	s.Run()
 }

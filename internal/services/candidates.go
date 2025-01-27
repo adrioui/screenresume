@@ -1,0 +1,124 @@
+package services
+
+import (
+	"context"
+	"fmt"
+	"screenresume/internal/models"
+	"screenresume/internal/repositories"
+	"screenresume/pkg/db"
+
+	"github.com/google/uuid"
+)
+
+type CandidatesService interface {
+	GetAllCandidates(ctx context.Context) ([]models.Candidates, error)
+	CreateCandidates(ctx context.Context, input models.CandidatesCreate) (models.Candidates, error)
+	GetCandidates(ctx context.Context, id string) (models.Candidates, error)
+	UpdateCandidates(ctx context.Context, id string, input models.CandidatesUpdate) (models.Candidates, error)
+	DeleteCandidates(ctx context.Context, id string) (any, error)
+}
+
+type CandidateServiceImpl struct {
+	store db.Store
+}
+
+func NewCandidateService(store db.Store) *CandidateServiceImpl {
+	return &CandidateServiceImpl{store: store}
+}
+
+// Type conversion helpers
+func toCandidatesDTO(dbCandidate repositories.Candidate) models.Candidates {
+	return models.Candidates{
+		ID:       dbCandidate.ID.String(),
+		FullName: dbCandidate.FullName,
+		Email:    dbCandidate.Email,
+		Phone:    dbCandidate.Phone,
+		FileID:   dbCandidate.FileID.String(),
+		Status:   dbCandidate.Status,
+	}
+}
+
+func toCandidatesCreateParams(input models.CandidatesCreate) repositories.CreateCandidateParams {
+	return repositories.CreateCandidateParams{
+		FullName: input.FullName,
+		Email:    input.Email,
+		Phone:    input.Phone,
+		FileID:   uuid.MustParse(input.FileID),
+		Status:   input.Status,
+	}
+}
+
+// Service method implementations
+func (s *CandidateServiceImpl) GetAllCandidates(ctx context.Context) ([]models.Candidates, error) {
+	dbCandidates, err := s.store.ListCandidates(ctx)
+	if err != nil {
+		return nil, fmt.Errorf("failed to list candidates: %w", err)
+	}
+
+	candidates := make([]models.Candidates, len(dbCandidates))
+	for i, f := range dbCandidates {
+		candidates[i] = toCandidatesDTO(f)
+	}
+	return candidates, nil
+}
+
+func (s *CandidateServiceImpl) CreateCandidates(ctx context.Context, input models.CandidatesCreate) (models.Candidates, error) {
+	params := toCandidatesCreateParams(input)
+
+	dbCandidate, err := s.store.CreateCandidate(ctx, params)
+	if err != nil {
+		return models.Candidates{}, fmt.Errorf("failed to create candidate: %w", err)
+	}
+
+	return toCandidatesDTO(dbCandidate), nil
+}
+
+func (s *CandidateServiceImpl) GetCandidates(ctx context.Context, id string) (models.Candidates, error) {
+	uuidID, err := uuid.Parse(id)
+	if err != nil {
+		return models.Candidates{}, fmt.Errorf("invalid ID format: %w", err)
+	}
+
+	dbCandidate, err := s.store.GetCandidate(ctx, uuidID)
+	if err != nil {
+		return models.Candidates{}, fmt.Errorf("failed to get candidate: %w", err)
+	}
+
+	return toCandidatesDTO(dbCandidate), nil
+}
+
+func (s *CandidateServiceImpl) UpdateCandidates(ctx context.Context, id string, input models.CandidatesUpdate) (models.Candidates, error) {
+	uuidID, err := uuid.Parse(id)
+	if err != nil {
+		return models.Candidates{}, fmt.Errorf("invalid ID format: %w", err)
+	}
+
+	params := repositories.UpdateCandidateParams{
+		ID:       uuidID,
+		FullName: input.FullName,
+		Email:    input.Email,
+		Phone:    input.Phone,
+		FileID:   uuid.MustParse(input.FileID),
+		Status:   input.Status,
+	}
+
+	if err := s.store.UpdateCandidate(ctx, params); err != nil {
+		return models.Candidates{}, fmt.Errorf("failed to update candidate: %w", err)
+	}
+
+	// Fetch updated entity
+	return s.GetCandidates(ctx, id)
+}
+
+func (s *CandidateServiceImpl) DeleteCandidates(ctx context.Context, id string) (any, error) {
+	uuidID, err := uuid.Parse(id)
+	if err != nil {
+		return nil, fmt.Errorf("invalid ID format: %w", err)
+	}
+
+	if err := s.store.DeleteCandidate(ctx, uuidID); err != nil {
+		return nil, fmt.Errorf("failed to delete candidate: %w", err)
+	}
+
+	return nil, nil
+}
