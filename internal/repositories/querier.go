@@ -15,23 +15,28 @@ type Querier interface {
 	CreateDepartment(ctx context.Context, name string) (Department, error)
 	CreateFile(ctx context.Context, arg CreateFileParams) (File, error)
 	CreateJobRole(ctx context.Context, arg CreateJobRoleParams) (JobRole, error)
+	CreateSkill(ctx context.Context, arg CreateSkillParams) (Skill, error)
 	DeleteCandidate(ctx context.Context, id uuid.UUID) error
 	DeleteDepartment(ctx context.Context, id uuid.UUID) error
 	DeleteFile(ctx context.Context, id uuid.UUID) error
 	DeleteJobRole(ctx context.Context, id uuid.UUID) error
+	DeleteSkill(ctx context.Context, id uuid.UUID) error
 	GetCandidate(ctx context.Context, id uuid.UUID) (Candidate, error)
 	GetDepartment(ctx context.Context, id uuid.UUID) (Department, error)
 	GetFile(ctx context.Context, id uuid.UUID) (File, error)
 	GetFilesByPath(ctx context.Context, path string) ([]File, error)
 	GetJobRole(ctx context.Context, id uuid.UUID) (JobRole, error)
+	GetSkill(ctx context.Context, id uuid.UUID) (Skill, error)
 	ListCandidates(ctx context.Context) ([]Candidate, error)
 	ListDepartments(ctx context.Context) ([]Department, error)
 	ListFiles(ctx context.Context) ([]File, error)
 	ListJobRoles(ctx context.Context) ([]JobRole, error)
+	ListSkills(ctx context.Context) ([]Skill, error)
 	UpdateCandidate(ctx context.Context, arg UpdateCandidateParams) error
 	UpdateDepartment(ctx context.Context, arg UpdateDepartmentParams) error
 	UpdateFile(ctx context.Context, arg UpdateFileParams) error
 	UpdateJobRole(ctx context.Context, arg UpdateJobRoleParams) error
+	UpdateSkill(ctx context.Context, arg UpdateSkillParams) error
 }
 
 var _ Querier = (*Queries)(nil)
