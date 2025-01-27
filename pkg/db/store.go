@@ -3,7 +3,7 @@ package db
 import (
 	"screenresume/internal/repositories"
 
-	"github.com/jackc/pgx/v5/pgxpool"
+	"github.com/jackc/pgx/v4/pgxpool"
 )
 
 // Store defines all functions to execute db queries and transactions

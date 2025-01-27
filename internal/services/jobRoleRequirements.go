@@ -3,14 +3,13 @@ package services
 import (
 	"context"
 	"fmt"
-	"math/big"
 	"screenresume/internal/models"
 	"screenresume/internal/repositories"
 	"screenresume/pkg/db"
 	"strconv"
 
 	"github.com/google/uuid"
-	"github.com/jackc/pgx/v5/pgtype"
+	"github.com/jackc/pgtype"
 )
 
 type JobRoleRequirementsService interface {
@@ -29,30 +28,30 @@ func NewJobRoleRequirementService(store db.Store) *JobRoleRequirementServiceImpl
 	return &JobRoleRequirementServiceImpl{store: store}
 }
 
-// Convert pgtype.Numeric to float64
-func numericToFloat64(n pgtype.Numeric) (float64, error) {
-	if !n.Valid {
-		return 0, fmt.Errorf("numeric value is not valid")
-	}
+// // Convert pgtype.Numeric to float64
+// func numericToFloat64(n pgtype.Numeric) (float64, error) {
+// 	if !n.Valid {
+// 		return 0, fmt.Errorf("numeric value is not valid")
+// 	}
 
-	// Convert the numeric value to a big.Float
-	bigFloat := new(big.Float).SetInt(n.Int)
+// 	// Convert the numeric value to a big.Float
+// 	bigFloat := new(big.Float).SetInt(n.Int)
 
-	// Apply the exponent to adjust the decimal places
-	if n.Exp != 0 {
-		exp := new(big.Float).SetInt(new(big.Int).Exp(big.NewInt(10), big.NewInt(int64(-n.Exp)), nil))
-		bigFloat.Quo(bigFloat, exp)
-	}
+// 	// Apply the exponent to adjust the decimal places
+// 	if n.Exp != 0 {
+// 		exp := new(big.Float).SetInt(new(big.Int).Exp(big.NewInt(10), big.NewInt(int64(-n.Exp)), nil))
+// 		bigFloat.Quo(bigFloat, exp)
+// 	}
 
-	// Convert big.Float to float64
-	floatVal, _ := bigFloat.Float64()
-	return floatVal, nil
-}
+// 	// Convert big.Float to float64
+// 	floatVal, _ := bigFloat.Float64()
+// 	return floatVal, nil
+// }
 
 // Type conversion helpers
 func toJobRoleRequirementsDTO(dbJobRoleRequirement repositories.JobRoleRequirement) (models.JobRoleRequirements, error) {
-	minExperienceYears, err := numericToFloat64(dbJobRoleRequirement.MinExperienceYears)
-	if err != nil {
+	var minExperienceYears float64
+	if err := dbJobRoleRequirement.MinExperienceYears.AssignTo(&minExperienceYears); err != nil {
 		return models.JobRoleRequirements{}, err
 	}
 

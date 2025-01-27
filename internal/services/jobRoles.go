@@ -8,7 +8,6 @@ import (
 	"screenresume/pkg/db"
 
 	"github.com/google/uuid"
-	"github.com/jackc/pgx/v5/pgtype"
 )
 
 type JobRolesService interface {
@@ -29,24 +28,13 @@ func NewJobRoleService(store db.Store) *JobRoleServiceImpl {
 
 // Type conversion helpers
 func toJobRolesDTO(dbJobRole repositories.JobRole) models.JobRoles {
-	// Handle Location conversion (pgtype.Text to *string)
-	var location *string
-	if dbJobRole.Location.Valid {
-		location = &dbJobRole.Location.String
-	}
-
-	var salaryRange *string
-	if dbJobRole.SalaryRange.Valid {
-		salaryRange = &dbJobRole.SalaryRange.String
-	}
-
 	return models.JobRoles{
 		ID:           dbJobRole.ID.String(),
 		Title:        dbJobRole.Title,
 		DepartmentID: dbJobRole.DepartmentID.String(),
 		Level:        string(dbJobRole.Level),
-		SalaryRange:  salaryRange,
-		Location:     location,
+		SalaryRange:  dbJobRole.SalaryRange,
+		Location:     dbJobRole.Location,
 		IsActive:     dbJobRole.IsActive,
 	}
 }
@@ -61,77 +49,35 @@ func toCreateJobRoleParams(input models.JobRolesCreate) (repositories.CreateJobR
 	// Convert Level from string to ExperienceLevel
 	level := repositories.ExperienceLevel(input.Level) // Assuming ExperienceLevel is a type alias for string
 
-	// Convert Location and SalaryRange from *string to pgtype.Text
-	var location pgtype.Text
-	if input.Location != nil {
-		location = pgtype.Text{String: *input.Location, Valid: true}
-	} else {
-		location = pgtype.Text{Valid: false}
-	}
-
-	var salaryRange pgtype.Text
-	if input.SalaryRange != nil {
-		salaryRange = pgtype.Text{String: *input.SalaryRange, Valid: true}
-	} else {
-		salaryRange = pgtype.Text{Valid: false}
-	}
-
 	return repositories.CreateJobRoleParams{
 		Title:        input.Title,
 		DepartmentID: departmentID,
 		Level:        level,
-		SalaryRange:  salaryRange,
-		Location:     location,
+		SalaryRange:  input.SalaryRange,
+		Location:     input.Location,
 		IsActive:     input.IsActive,
 	}, nil
 }
 
 func toUpdateJobRoleParams(id uuid.UUID, input models.JobRolesUpdate) (repositories.UpdateJobRoleParams, error) {
-	params := repositories.UpdateJobRoleParams{
-		ID: id,
+	// Convert DepartmentID from string to uuid.UUID
+	departmentID, err := uuid.Parse(input.DepartmentID)
+	if err != nil {
+		return repositories.UpdateJobRoleParams{}, fmt.Errorf("invalid DepartmentID: %w", err)
 	}
 
-	// Handle nullable fields
-	if input.Title != nil {
-		params.Title = *input.Title
-	}
+	// Convert Level from string to ExperienceLevel
+	level := repositories.ExperienceLevel(input.Level) // Assuming ExperienceLevel is a type alias for string
 
-	if input.DepartmentID != nil {
-		departmentID, err := uuid.Parse(*input.DepartmentID)
-		if err != nil {
-			return repositories.UpdateJobRoleParams{}, fmt.Errorf("invalid department ID: %w", err)
-		}
-		params.DepartmentID = departmentID
-	}
-
-	if input.Level != nil {
-		params.Level = repositories.ExperienceLevel(*input.Level)
-	}
-
-	// Handle pgtype.Text conversion
-	if input.Location != nil {
-		params.Location = pgtype.Text{
-			String: *input.Location,
-			Valid:  true,
-		}
-	} else {
-		params.Location = pgtype.Text{Valid: false}
-	}
-
-	if input.SalaryRange != nil {
-		params.SalaryRange = pgtype.Text{
-			String: *input.SalaryRange,
-			Valid:  true,
-		}
-	} else {
-		params.SalaryRange = pgtype.Text{Valid: false}
-	}
-
-	if input.IsActive != nil {
-		params.IsActive = *input.IsActive
-	}
-
-	return params, nil
+	return repositories.UpdateJobRoleParams{
+		ID:           id,
+		Title:        input.Title,
+		DepartmentID: departmentID,
+		Level:        level,
+		SalaryRange:  input.SalaryRange,
+		Location:     input.Location,
+		IsActive:     input.IsActive,
+	}, nil
 }
 
 // Service method implementations
