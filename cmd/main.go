@@ -39,6 +39,8 @@ func main() {
 	filesController.Routes(s)
 	jobRolesController.Routes(s)
 	departmentsController.Routes(s)
+	candidatesController.Routes(s)
+	skillsController.Routes(s)
 
 	s.Run()
 }
