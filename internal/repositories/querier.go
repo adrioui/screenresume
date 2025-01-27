@@ -15,27 +15,33 @@ type Querier interface {
 	CreateDepartment(ctx context.Context, name string) (Department, error)
 	CreateFile(ctx context.Context, arg CreateFileParams) (File, error)
 	CreateJobRole(ctx context.Context, arg CreateJobRoleParams) (JobRole, error)
+	CreateJobRoleRequirement(ctx context.Context, arg CreateJobRoleRequirementParams) (JobRoleRequirement, error)
 	CreateSkill(ctx context.Context, arg CreateSkillParams) (Skill, error)
 	DeleteCandidate(ctx context.Context, id uuid.UUID) error
 	DeleteDepartment(ctx context.Context, id uuid.UUID) error
 	DeleteFile(ctx context.Context, id uuid.UUID) error
 	DeleteJobRole(ctx context.Context, id uuid.UUID) error
+	DeleteJobRoleRequirement(ctx context.Context, arg DeleteJobRoleRequirementParams) error
 	DeleteSkill(ctx context.Context, id uuid.UUID) error
 	GetCandidate(ctx context.Context, id uuid.UUID) (Candidate, error)
 	GetDepartment(ctx context.Context, id uuid.UUID) (Department, error)
 	GetFile(ctx context.Context, id uuid.UUID) (File, error)
 	GetFilesByPath(ctx context.Context, path string) ([]File, error)
 	GetJobRole(ctx context.Context, id uuid.UUID) (JobRole, error)
+	GetJobRoleRequirement(ctx context.Context, arg GetJobRoleRequirementParams) (JobRoleRequirement, error)
 	GetSkill(ctx context.Context, id uuid.UUID) (Skill, error)
 	ListCandidates(ctx context.Context) ([]Candidate, error)
 	ListDepartments(ctx context.Context) ([]Department, error)
 	ListFiles(ctx context.Context) ([]File, error)
+	ListJobRoleRequirements(ctx context.Context) ([]JobRoleRequirement, error)
 	ListJobRoles(ctx context.Context) ([]JobRole, error)
 	ListSkills(ctx context.Context) ([]Skill, error)
+	ToggleJobRoleRequirement(ctx context.Context, arg ToggleJobRoleRequirementParams) error
 	UpdateCandidate(ctx context.Context, arg UpdateCandidateParams) error
 	UpdateDepartment(ctx context.Context, arg UpdateDepartmentParams) error
 	UpdateFile(ctx context.Context, arg UpdateFileParams) error
 	UpdateJobRole(ctx context.Context, arg UpdateJobRoleParams) error
+	UpdateJobRoleRequirement(ctx context.Context, arg UpdateJobRoleRequirementParams) error
 	UpdateSkill(ctx context.Context, arg UpdateSkillParams) error
 }
 

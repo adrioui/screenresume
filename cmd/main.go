@@ -34,6 +34,9 @@ func main() {
 	skillsService := services.NewSkillService(store)
 	skillsController := controller.SkillsResources{SkillsService: skillsService}
 
+	jobRoleRequirementsService := services.NewJobRoleRequirementService(store)
+	jobRoleRequirementsController := controller.JobRoleRequirementsResources{JobRoleRequirementsService: jobRoleRequirementsService}
+
 	s := fuego.NewServer()
 
 	filesController.Routes(s)
@@ -41,6 +44,7 @@ func main() {
 	departmentsController.Routes(s)
 	candidatesController.Routes(s)
 	skillsController.Routes(s)
+	jobRoleRequirementsController.Routes(s)
 
 	s.Run()
 }
