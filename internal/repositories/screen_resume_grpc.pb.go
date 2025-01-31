@@ -2,9 +2,9 @@
 // versions:
 // - protoc-gen-go-grpc v1.5.1
 // - protoc             v5.29.1
-// source: resume_screener.proto
+// source: screen_resume.proto
 
-package resume_screener
+package repositories
 
 import (
 	context "context"
@@ -19,8 +19,7 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	ResumeScreener_ScreenResume_FullMethodName = "/resume_screener.ResumeScreener/ScreenResume"
-	ResumeScreener_UploadResume_FullMethodName = "/resume_screener.ResumeScreener/UploadResume"
+	ResumeScreener_ScreenResume_FullMethodName = "/repositories.ResumeScreener/ScreenResume"
 )
 
 // ResumeScreenerClient is the client API for ResumeScreener service.
@@ -28,7 +27,6 @@ const (
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type ResumeScreenerClient interface {
 	ScreenResume(ctx context.Context, in *ScreenResumeRequest, opts ...grpc.CallOption) (*ScreenResumeResponse, error)
-	UploadResume(ctx context.Context, opts ...grpc.CallOption) (grpc.ClientStreamingClient[UploadResumeRequest, UploadResumeResponse], error)
 }
 
 type resumeScreenerClient struct {
@@ -49,25 +47,11 @@ func (c *resumeScreenerClient) ScreenResume(ctx context.Context, in *ScreenResum
 	return out, nil
 }
 
-func (c *resumeScreenerClient) UploadResume(ctx context.Context, opts ...grpc.CallOption) (grpc.ClientStreamingClient[UploadResumeRequest, UploadResumeResponse], error) {
-	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	stream, err := c.cc.NewStream(ctx, &ResumeScreener_ServiceDesc.Streams[0], ResumeScreener_UploadResume_FullMethodName, cOpts...)
-	if err != nil {
-		return nil, err
-	}
-	x := &grpc.GenericClientStream[UploadResumeRequest, UploadResumeResponse]{ClientStream: stream}
-	return x, nil
-}
-
-// This type alias is provided for backwards compatibility with existing code that references the prior non-generic stream type by name.
-type ResumeScreener_UploadResumeClient = grpc.ClientStreamingClient[UploadResumeRequest, UploadResumeResponse]
-
 // ResumeScreenerServer is the server API for ResumeScreener service.
 // All implementations must embed UnimplementedResumeScreenerServer
 // for forward compatibility.
 type ResumeScreenerServer interface {
 	ScreenResume(context.Context, *ScreenResumeRequest) (*ScreenResumeResponse, error)
-	UploadResume(grpc.ClientStreamingServer[UploadResumeRequest, UploadResumeResponse]) error
 	mustEmbedUnimplementedResumeScreenerServer()
 }
 
@@ -80,9 +64,6 @@ type UnimplementedResumeScreenerServer struct{}
 
 func (UnimplementedResumeScreenerServer) ScreenResume(context.Context, *ScreenResumeRequest) (*ScreenResumeResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ScreenResume not implemented")
-}
-func (UnimplementedResumeScreenerServer) UploadResume(grpc.ClientStreamingServer[UploadResumeRequest, UploadResumeResponse]) error {
-	return status.Errorf(codes.Unimplemented, "method UploadResume not implemented")
 }
 func (UnimplementedResumeScreenerServer) mustEmbedUnimplementedResumeScreenerServer() {}
 func (UnimplementedResumeScreenerServer) testEmbeddedByValue()                        {}
@@ -123,18 +104,11 @@ func _ResumeScreener_ScreenResume_Handler(srv interface{}, ctx context.Context, 
 	return interceptor(ctx, in, info, handler)
 }
 
-func _ResumeScreener_UploadResume_Handler(srv interface{}, stream grpc.ServerStream) error {
-	return srv.(ResumeScreenerServer).UploadResume(&grpc.GenericServerStream[UploadResumeRequest, UploadResumeResponse]{ServerStream: stream})
-}
-
-// This type alias is provided for backwards compatibility with existing code that references the prior non-generic stream type by name.
-type ResumeScreener_UploadResumeServer = grpc.ClientStreamingServer[UploadResumeRequest, UploadResumeResponse]
-
 // ResumeScreener_ServiceDesc is the grpc.ServiceDesc for ResumeScreener service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
 var ResumeScreener_ServiceDesc = grpc.ServiceDesc{
-	ServiceName: "resume_screener.ResumeScreener",
+	ServiceName: "repositories.ResumeScreener",
 	HandlerType: (*ResumeScreenerServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
@@ -142,12 +116,6 @@ var ResumeScreener_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _ResumeScreener_ScreenResume_Handler,
 		},
 	},
-	Streams: []grpc.StreamDesc{
-		{
-			StreamName:    "UploadResume",
-			Handler:       _ResumeScreener_UploadResume_Handler,
-			ClientStreams: true,
-		},
-	},
-	Metadata: "resume_screener.proto",
+	Streams:  []grpc.StreamDesc{},
+	Metadata: "screen_resume.proto",
 }

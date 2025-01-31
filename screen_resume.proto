@@ -1,0 +1,27 @@
+syntax = "proto3";
+
+package repositories;
+
+option go_package = "./internal/repositories";
+
+service ResumeScreener {
+  rpc ScreenResume(ScreenResumeRequest) returns (ScreenResumeResponse);
+}
+
+message ScreenResumeRequest {
+  string job_description = 1;
+  repeated string criteria = 2;
+  string file_url = 3;
+}
+
+message CriteriaDecision {
+  string reasoning = 1;
+  bool decision = 2;
+}
+
+message ScreenResumeResponse {
+  repeated CriteriaDecision criteria_decisions = 1;
+  string overall_reasoning = 2;
+  bool overall_decision = 3;
+  string resume_name = 4;
+}
