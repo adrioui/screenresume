@@ -12,7 +12,7 @@ type JobRoleRequirementsResources struct {
 }
 
 func (rs JobRoleRequirementsResources) Routes(s *fuego.Server) {
-	JobRoleRequirementsGroup := fuego.Group(s, "/job_role_requirements")
+	JobRoleRequirementsGroup := fuego.Group(s, "/job-role-requirements")
 
 	fuego.Get(JobRoleRequirementsGroup, "/", rs.getAllJobRoleRequirements)
 	fuego.Post(JobRoleRequirementsGroup, "/", rs.postJobRoleRequirements)
