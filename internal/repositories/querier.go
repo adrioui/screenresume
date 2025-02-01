@@ -17,6 +17,8 @@ type Querier interface {
 	CreateFile(ctx context.Context, arg CreateFileParams) (File, error)
 	CreateJobRole(ctx context.Context, arg CreateJobRoleParams) (JobRole, error)
 	CreateJobRoleRequirement(ctx context.Context, arg CreateJobRoleRequirementParams) (JobRoleRequirement, error)
+	CreateScreeningCriteria(ctx context.Context, arg CreateScreeningCriteriaParams) (ScreeningCriterium, error)
+	CreateScreeningResults(ctx context.Context, arg CreateScreeningResultsParams) (ScreeningResult, error)
 	CreateSkill(ctx context.Context, arg CreateSkillParams) (Skill, error)
 	DeleteCandidate(ctx context.Context, id uuid.UUID) error
 	DeleteCandidateSkills(ctx context.Context, arg DeleteCandidateSkillsParams) error
@@ -32,6 +34,8 @@ type Querier interface {
 	GetFilesByPath(ctx context.Context, path string) ([]File, error)
 	GetJobRole(ctx context.Context, id uuid.UUID) (JobRole, error)
 	GetJobRoleRequirement(ctx context.Context, arg GetJobRoleRequirementParams) (JobRoleRequirement, error)
+	GetScreeningCriteria(ctx context.Context, id uuid.UUID) (ScreeningCriterium, error)
+	GetScreeningResults(ctx context.Context, id uuid.UUID) (ScreeningResult, error)
 	GetSkill(ctx context.Context, id uuid.UUID) (Skill, error)
 	ListCandidateSkills(ctx context.Context) ([]CandidateSkill, error)
 	ListCandidates(ctx context.Context) ([]Candidate, error)
@@ -39,6 +43,8 @@ type Querier interface {
 	ListFiles(ctx context.Context) ([]File, error)
 	ListJobRoleRequirements(ctx context.Context) ([]JobRoleRequirement, error)
 	ListJobRoles(ctx context.Context) ([]JobRole, error)
+	ListScreeningCriteria(ctx context.Context) ([]ScreeningCriterium, error)
+	ListScreeningResults(ctx context.Context) ([]ScreeningResult, error)
 	ListSkills(ctx context.Context) ([]Skill, error)
 	ToggleJobRoleRequirement(ctx context.Context, arg ToggleJobRoleRequirementParams) error
 	UpdateCandidate(ctx context.Context, arg UpdateCandidateParams) error
