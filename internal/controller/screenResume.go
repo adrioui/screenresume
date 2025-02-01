@@ -27,10 +27,6 @@ func (rs ScreenResumeResources) Routes(s *fuego.Server) {
 }
 
 func (rs ScreenResumeResources) postScreenResume(c fuego.ContextWithBody[models.ScreenResumeCreate]) (models.ScreenResume, error) {
-	// endpoint := "localhost:9000"
-	// bucketName := "resume"
-	// location := "us-east-1"
-
 	const (
 		endpoint   = "localhost:9000"
 		bucketName = "resume"
