@@ -11,6 +11,7 @@ import (
 )
 
 type Querier interface {
+	CreateApplication(ctx context.Context, arg CreateApplicationParams) (Application, error)
 	CreateCandidate(ctx context.Context, arg CreateCandidateParams) (Candidate, error)
 	CreateCandidateSkills(ctx context.Context, arg CreateCandidateSkillsParams) (CandidateSkill, error)
 	CreateDepartment(ctx context.Context, name string) (Department, error)
@@ -20,6 +21,7 @@ type Querier interface {
 	CreateScreeningCriteria(ctx context.Context, arg CreateScreeningCriteriaParams) (ScreeningCriterium, error)
 	CreateScreeningResults(ctx context.Context, arg CreateScreeningResultsParams) (ScreeningResult, error)
 	CreateSkill(ctx context.Context, arg CreateSkillParams) (Skill, error)
+	DeleteApplication(ctx context.Context, id uuid.UUID) error
 	DeleteCandidate(ctx context.Context, id uuid.UUID) error
 	DeleteCandidateSkills(ctx context.Context, arg DeleteCandidateSkillsParams) error
 	DeleteDepartment(ctx context.Context, id uuid.UUID) error
@@ -27,6 +29,8 @@ type Querier interface {
 	DeleteJobRole(ctx context.Context, id uuid.UUID) error
 	DeleteJobRoleRequirement(ctx context.Context, arg DeleteJobRoleRequirementParams) error
 	DeleteSkill(ctx context.Context, id uuid.UUID) error
+	GetApplication(ctx context.Context, id uuid.UUID) (Application, error)
+	GetApplicationByFileID(ctx context.Context, id uuid.UUID) (uuid.UUID, error)
 	GetCandidate(ctx context.Context, id uuid.UUID) (Candidate, error)
 	GetCandidateSkills(ctx context.Context, arg GetCandidateSkillsParams) (CandidateSkill, error)
 	GetDepartment(ctx context.Context, id uuid.UUID) (Department, error)
@@ -37,6 +41,7 @@ type Querier interface {
 	GetScreeningCriteria(ctx context.Context, id uuid.UUID) (ScreeningCriterium, error)
 	GetScreeningResults(ctx context.Context, id uuid.UUID) (ScreeningResult, error)
 	GetSkill(ctx context.Context, id uuid.UUID) (Skill, error)
+	ListApplications(ctx context.Context) ([]Application, error)
 	ListCandidateSkills(ctx context.Context) ([]CandidateSkill, error)
 	ListCandidates(ctx context.Context) ([]Candidate, error)
 	ListDepartments(ctx context.Context) ([]Department, error)
@@ -47,6 +52,7 @@ type Querier interface {
 	ListScreeningResults(ctx context.Context) ([]ScreeningResult, error)
 	ListSkills(ctx context.Context) ([]Skill, error)
 	ToggleJobRoleRequirement(ctx context.Context, arg ToggleJobRoleRequirementParams) error
+	UpdateApplication(ctx context.Context, arg UpdateApplicationParams) error
 	UpdateCandidate(ctx context.Context, arg UpdateCandidateParams) error
 	UpdateCandidateSkills(ctx context.Context, arg UpdateCandidateSkillsParams) error
 	UpdateDepartment(ctx context.Context, arg UpdateDepartmentParams) error
