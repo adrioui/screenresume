@@ -53,6 +53,9 @@ func main() {
 	screenResumeService := services.NewScreenResumeService(conn)
 	screenResumeController := controller.ScreenResumeResources{ScreenResumeService: screenResumeService}
 
+	applicationService := services.NewApplicationService(store)
+	applicationController := controller.ApplicationResources{ApplicationService: applicationService}
+
 	s := fuego.NewServer()
 
 	filesController.Routes(s)
@@ -63,6 +66,7 @@ func main() {
 	jobRoleRequirementsController.Routes(s)
 	candidateSkillsController.Routes(s)
 	screenResumeController.Routes(s)
+	applicationController.Routes(s)
 
 	s.Run()
 }
