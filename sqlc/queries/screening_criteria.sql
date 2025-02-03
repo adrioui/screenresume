@@ -12,8 +12,8 @@ from screening_criteria
 
 -- name: CreateScreeningCriteria :one
 insert into screening_criteria (
-  id, screening_result_id, criteria_text, decision, reasoning, matched_skills, missing_skills
+  id, screening_result_id, decision, reasoning, matched_skills, missing_skills
 ) values (
-  uuid_generate_v4(), $1, $2, $3, $4, $5, $6
+  uuid_generate_v4(), $1, $2, $3, $4, $5
 )
 RETURNING *;

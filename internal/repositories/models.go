@@ -171,7 +171,6 @@ type JobRoleRequirement struct {
 type ScreeningCriterium struct {
 	ID                uuid.UUID   `json:"id"`
 	ScreeningResultID uuid.UUID   `json:"screening_result_id"`
-	CriteriaText      string      `json:"criteria_text"`
 	Decision          bool        `json:"decision"`
 	Reasoning         string      `json:"reasoning"`
 	MatchedSkills     []uuid.UUID `json:"matched_skills"`

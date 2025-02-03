@@ -38,7 +38,6 @@ func toScreeningCriteriaDTO(dbScreeningCriteria repositories.ScreeningCriterium)
 	return models.ScreeningCriteria{
 		ID:                 dbScreeningCriteria.ID.String(),
 		ScreeningResultsID: dbScreeningCriteria.ScreeningResultID.String(),
-		CriteriaText:       dbScreeningCriteria.CriteriaText,
 		Decision:           dbScreeningCriteria.Decision,
 		Reasoning:          dbScreeningCriteria.Reasoning,
 		MatchedSkills:      matchedSkills,
@@ -57,7 +56,6 @@ func toScreeningCriteriaCreateParams(input models.ScreeningCriteriaCreate) repos
 	}
 	return repositories.CreateScreeningCriteriaParams{
 		ScreeningResultID: uuid.MustParse(input.ScreeningResultsID),
-		CriteriaText:      input.CriteriaText,
 		Decision:          input.Decision,
 		Reasoning:         input.Reasoning,
 		MatchedSkills:     matchedSkills,
@@ -102,4 +100,16 @@ func (s *ScreeningCriteriaServiceImpl) GetScreeningCriteria(ctx context.Context,
 	}
 
 	return toScreeningCriteriaDTO(dbScreeningCriteria), nil
+}
+
+func (s *ScreeningCriteriaServiceImpl) CreateScreeningCriteriaWithTx(ctx context.Context, q repositories.Querier, input models.ScreeningCriteriaCreate) (models.ScreeningCriteria, error) {
+	params := toScreeningCriteriaCreateParams(input)
+
+	dbScreeningCriteria, err := q.CreateScreeningCriteria(ctx, params)
+	if err != nil {
+		return models.ScreeningCriteria{}, fmt.Errorf("failed to create screeningCriteria: %w", err)
+	}
+
+	screeningCriteriaDTO := toScreeningCriteriaDTO(dbScreeningCriteria)
+	return screeningCriteriaDTO, nil
 }

@@ -13,16 +13,15 @@ import (
 
 const createScreeningCriteria = `-- name: CreateScreeningCriteria :one
 insert into screening_criteria (
-  id, screening_result_id, criteria_text, decision, reasoning, matched_skills, missing_skills
+  id, screening_result_id, decision, reasoning, matched_skills, missing_skills
 ) values (
-  uuid_generate_v4(), $1, $2, $3, $4, $5, $6
+  uuid_generate_v4(), $1, $2, $3, $4, $5
 )
-RETURNING id, screening_result_id, criteria_text, decision, reasoning, matched_skills, missing_skills
+RETURNING id, screening_result_id, decision, reasoning, matched_skills, missing_skills
 `
 
 type CreateScreeningCriteriaParams struct {
 	ScreeningResultID uuid.UUID   `json:"screening_result_id"`
-	CriteriaText      string      `json:"criteria_text"`
 	Decision          bool        `json:"decision"`
 	Reasoning         string      `json:"reasoning"`
 	MatchedSkills     []uuid.UUID `json:"matched_skills"`
@@ -32,7 +31,6 @@ type CreateScreeningCriteriaParams struct {
 func (q *Queries) CreateScreeningCriteria(ctx context.Context, arg CreateScreeningCriteriaParams) (ScreeningCriterium, error) {
 	row := q.db.QueryRow(ctx, createScreeningCriteria,
 		arg.ScreeningResultID,
-		arg.CriteriaText,
 		arg.Decision,
 		arg.Reasoning,
 		arg.MatchedSkills,
@@ -42,7 +40,6 @@ func (q *Queries) CreateScreeningCriteria(ctx context.Context, arg CreateScreeni
 	err := row.Scan(
 		&i.ID,
 		&i.ScreeningResultID,
-		&i.CriteriaText,
 		&i.Decision,
 		&i.Reasoning,
 		&i.MatchedSkills,
@@ -52,7 +49,7 @@ func (q *Queries) CreateScreeningCriteria(ctx context.Context, arg CreateScreeni
 }
 
 const getScreeningCriteria = `-- name: GetScreeningCriteria :one
-select id, screening_result_id, criteria_text, decision, reasoning, matched_skills, missing_skills
+select id, screening_result_id, decision, reasoning, matched_skills, missing_skills
 from screening_criteria
 where id = $1
 limit 1
@@ -64,7 +61,6 @@ func (q *Queries) GetScreeningCriteria(ctx context.Context, id uuid.UUID) (Scree
 	err := row.Scan(
 		&i.ID,
 		&i.ScreeningResultID,
-		&i.CriteriaText,
 		&i.Decision,
 		&i.Reasoning,
 		&i.MatchedSkills,
@@ -74,7 +70,7 @@ func (q *Queries) GetScreeningCriteria(ctx context.Context, id uuid.UUID) (Scree
 }
 
 const listScreeningCriteria = `-- name: ListScreeningCriteria :many
-select id, screening_result_id, criteria_text, decision, reasoning, matched_skills, missing_skills
+select id, screening_result_id, decision, reasoning, matched_skills, missing_skills
 from screening_criteria
 `
 
@@ -90,7 +86,6 @@ func (q *Queries) ListScreeningCriteria(ctx context.Context) ([]ScreeningCriteri
 		if err := rows.Scan(
 			&i.ID,
 			&i.ScreeningResultID,
-			&i.CriteriaText,
 			&i.Decision,
 			&i.Reasoning,
 			&i.MatchedSkills,
