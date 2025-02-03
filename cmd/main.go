@@ -50,7 +50,16 @@ func main() {
 	candidateSkillsService := services.NewCandidateSkillService(store)
 	candidateSkillsController := controller.CandidateSkillsResources{CandidateSkillsService: candidateSkillsService}
 
-	screenResumeService := services.NewScreenResumeService(conn)
+	screeningResultsService := services.NewScreeningResultService(store)
+	screeningCriteriaService := services.NewScreeningCriteriaService(store)
+
+	screenResumeService := services.NewScreenResumeService(
+		conn,
+		skillsService,
+		screeningResultsService,
+		screeningCriteriaService,
+		filesService,
+	)
 	screenResumeController := controller.ScreenResumeResources{ScreenResumeService: screenResumeService}
 
 	applicationService := services.NewApplicationService(store)

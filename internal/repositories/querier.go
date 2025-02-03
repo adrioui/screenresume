@@ -41,6 +41,7 @@ type Querier interface {
 	GetScreeningCriteria(ctx context.Context, id uuid.UUID) (ScreeningCriterium, error)
 	GetScreeningResults(ctx context.Context, id uuid.UUID) (ScreeningResult, error)
 	GetSkill(ctx context.Context, id uuid.UUID) (Skill, error)
+	GetSkillByName(ctx context.Context, name string) (Skill, error)
 	ListApplications(ctx context.Context) ([]Application, error)
 	ListCandidateSkills(ctx context.Context) ([]CandidateSkill, error)
 	ListCandidates(ctx context.Context) ([]Candidate, error)

@@ -29,3 +29,10 @@ where id = $1;
 delete from skills
 where id = $1
 ;
+
+-- name: GetSkillByName :one
+select *
+from skills
+where name = $1
+limit 1
+;

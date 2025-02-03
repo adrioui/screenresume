@@ -2,6 +2,8 @@ package controller
 
 import (
 	"bytes"
+	"crypto/sha256"
+	"encoding/json"
 	"fmt"
 	"io"
 	"log"
@@ -39,7 +41,7 @@ func (rs ScreenResumeResources) postScreenResume(c fuego.ContextWithBody[models.
 	}
 
 	// Extract file from request
-	file, _, err := c.Request().FormFile("file")
+	file, fileHeader, err := c.Request().FormFile("file")
 	if err != nil {
 		log.Printf("Error retrieving file from request: %v", err)
 		return models.ScreenResume{}, err
@@ -52,6 +54,13 @@ func (rs ScreenResumeResources) postScreenResume(c fuego.ContextWithBody[models.
 		log.Printf("Error reading file: %v", err)
 		return models.ScreenResume{}, err
 	}
+
+	// Calculate checksum
+	hash := sha256.New()
+	if _, err := hash.Write(fileBuffer.Bytes()); err != nil {
+		return models.ScreenResume{}, fmt.Errorf("checksum calculation error: %w", err)
+	}
+	checksum := fmt.Sprintf("%x", hash.Sum(nil))
 
 	// Generate unique filename
 	fileName := fmt.Sprintf("%s-%d.pdf", uuid.New().String(), time.Now().Unix())
@@ -77,24 +86,34 @@ func (rs ScreenResumeResources) postScreenResume(c fuego.ContextWithBody[models.
 		FileUrl:        fmt.Sprintf("http://%s/%s/%s", endpoint, bucketName, fileName),
 	}
 
-	new, err := rs.ScreenResumeService.ScreenResume(&screenResumeRequest)
+	var criterias []string
+	// Check if it's a nested slice ([][]string) and extract the first element
+	if len(c.Request().Form["criteria"]) > 0 {
+		firstElement := c.Request().Form["criteria"][0]
+
+		// Try to parse it as JSON if it looks like a list in string form
+		err := json.Unmarshal([]byte(firstElement), &criterias)
+		if err != nil {
+			log.Printf("Error parsing criteria JSON: %v", err)
+			return models.ScreenResume{}, fmt.Errorf("invalid criteria format")
+		}
+	} else {
+		return models.ScreenResume{}, fmt.Errorf("no criteria provided")
+	}
+	processScreeningCreate := models.ProcessScreeningCreate{
+		ApplicationID: c.Request().FormValue("application_id"),
+		Criteria:      criterias,
+	}
+
+	// Create file record
+	fileCreate := models.FilesCreate{
+		Path:     fmt.Sprintf("%s/%s", bucketName, fileName),
+		FileType: fileHeader.Header.Get("Content-Type"),
+		Checksum: checksum,
+	}
+	screenResumeResponse, err := rs.ScreenResumeService.ProcessScreening(&screenResumeRequest, processScreeningCreate, fileCreate)
 	if err != nil {
 		return models.ScreenResume{}, err
-	}
-
-	criteriaDecisions := make([]*models.CriteriaDecision, len(new.CriteriaDecisions))
-	for i, f := range new.CriteriaDecisions {
-		criteriaDecisions[i] = &models.CriteriaDecision{
-			Reasoning: f.Reasoning,
-			Decision:  f.Decision,
-		}
-	}
-
-	screenResumeResponse := models.ScreenResume{
-		CriteriaDecisions: criteriaDecisions,
-		OverallReasoning:  new.OverallReasoning,
-		OverallDecision:   new.OverallDecision,
-		ResumeName:        new.ResumeName,
 	}
 
 	return screenResumeResponse, nil

@@ -20,6 +20,8 @@ func (rs SkillsResources) Routes(s *fuego.Server) {
 	fuego.Get(skillsGroup, "/{id}", rs.getSkills)
 	fuego.Put(skillsGroup, "/{id}", rs.putSkills)
 	fuego.Delete(skillsGroup, "/{id}", rs.deleteSkills)
+
+	fuego.Get(skillsGroup, "name/{name}", rs.getSkillByName)
 }
 
 func (rs SkillsResources) getAllSkills(c fuego.ContextNoBody) ([]models.Skills, error) {
@@ -64,4 +66,10 @@ func (rs SkillsResources) putSkills(c fuego.ContextWithBody[models.SkillsUpdate]
 
 func (rs SkillsResources) deleteSkills(c fuego.ContextNoBody) (any, error) {
 	return rs.SkillsService.DeleteSkills(c.Context(), c.PathParam("id"))
+}
+
+func (rs SkillsResources) getSkillByName(c fuego.ContextNoBody) (models.Skills, error) {
+	name := c.PathParam("name")
+
+	return rs.SkillsService.GetSkillByName(c.Context(), name)
 }

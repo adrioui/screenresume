@@ -16,6 +16,7 @@ type SkillsService interface {
 	GetSkills(ctx context.Context, id string) (models.Skills, error)
 	UpdateSkills(ctx context.Context, id string, input models.SkillsUpdate) (models.Skills, error)
 	DeleteSkills(ctx context.Context, id string) (any, error)
+	GetSkillByName(ctx context.Context, name string) (models.Skills, error)
 }
 
 type SkillServiceImpl struct {
@@ -112,4 +113,13 @@ func (s *SkillServiceImpl) DeleteSkills(ctx context.Context, id string) (any, er
 	}
 
 	return nil, nil
+}
+
+func (s *SkillServiceImpl) GetSkillByName(ctx context.Context, name string) (models.Skills, error) {
+	dbSkill, err := s.store.GetSkillByName(ctx, name)
+	if err != nil {
+		return models.Skills{}, fmt.Errorf("failed to get skill: %w", err)
+	}
+
+	return toSkillsDTO(dbSkill), nil
 }

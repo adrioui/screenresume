@@ -108,7 +108,6 @@ CREATE TABLE screening_results (
 CREATE TABLE screening_criteria (
     id UUID PRIMARY KEY,
     screening_result_id UUID NOT NULL REFERENCES screening_results(id) ON DELETE CASCADE,
-    criteria_text VARCHAR(255) NOT NULL,
     decision BOOLEAN NOT NULL,
     reasoning VARCHAR(255) NOT NULL,
     matched_skills UUID[],

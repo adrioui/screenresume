@@ -13,7 +13,13 @@ type ScreenResume struct {
 }
 
 type ScreenResumeCreate struct {
+	ApplicationID  string   `json:"application_id"`
 	JobDescription string   `json:"job_description"`
 	Criteria       []string `json:"criteria"`
 	File           []byte   `json:"file"`
+}
+
+type ProcessScreeningCreate struct {
+	ApplicationID string   `json:"application_id"`
+	Criteria      []string `json:"criteria"`
 }

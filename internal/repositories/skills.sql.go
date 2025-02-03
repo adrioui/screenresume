@@ -68,6 +68,26 @@ func (q *Queries) GetSkill(ctx context.Context, id uuid.UUID) (Skill, error) {
 	return i, err
 }
 
+const getSkillByName = `-- name: GetSkillByName :one
+select id, name, category, created_at, updated_at
+from skills
+where name = $1
+limit 1
+`
+
+func (q *Queries) GetSkillByName(ctx context.Context, name string) (Skill, error) {
+	row := q.db.QueryRow(ctx, getSkillByName, name)
+	var i Skill
+	err := row.Scan(
+		&i.ID,
+		&i.Name,
+		&i.Category,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+	)
+	return i, err
+}
+
 const listSkills = `-- name: ListSkills :many
 select id, name, category, created_at, updated_at
 from skills
