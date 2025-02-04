@@ -11,6 +11,7 @@ import (
 )
 
 type Querier interface {
+	CandidateAndJobRoles(ctx context.Context, arg CandidateAndJobRolesParams) ([]CandidateAndJobRolesRow, error)
 	CreateApplication(ctx context.Context, arg CreateApplicationParams) (Application, error)
 	CreateCandidate(ctx context.Context, arg CreateCandidateParams) (Candidate, error)
 	CreateCandidateSkills(ctx context.Context, arg CreateCandidateSkillsParams) (CandidateSkill, error)

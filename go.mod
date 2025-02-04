@@ -9,6 +9,7 @@ require (
 	github.com/jackc/pgtype v1.14.4
 	github.com/jackc/pgx/v4 v4.18.3
 	github.com/minio/minio-go v6.0.14+incompatible
+	github.com/rs/cors v1.11.1
 	google.golang.org/grpc v1.70.0
 	google.golang.org/protobuf v1.36.4
 )
