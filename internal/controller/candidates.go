@@ -5,6 +5,17 @@ import (
 	"screenresume/internal/services"
 
 	"github.com/go-fuego/fuego"
+	"github.com/go-fuego/fuego/option"
+	"github.com/go-fuego/fuego/param"
+)
+
+// Define a reusable group of options
+var optionPagination = option.Group(
+	option.QueryInt("page", "Page number", param.Default(1)),
+	option.QueryInt("limit", "Items per page", param.Default(10)),
+)
+var optionNameSearch = option.Group(
+	option.Query("name", "Name search", param.Default("")),
 )
 
 type CandidatesResources struct {
@@ -16,6 +27,8 @@ func (rs CandidatesResources) Routes(s *fuego.Server) {
 
 	fuego.Get(candidatesGroup, "/", rs.getAllCandidates)
 	fuego.Post(candidatesGroup, "/", rs.postCandidates)
+
+	fuego.Get(candidatesGroup, "/job-roles", rs.getCandidateAndJobRoles, optionPagination, optionNameSearch)
 
 	fuego.Get(candidatesGroup, "/{id}", rs.getCandidates)
 	fuego.Put(candidatesGroup, "/{id}", rs.putCandidates)
@@ -64,4 +77,13 @@ func (rs CandidatesResources) putCandidates(c fuego.ContextWithBody[models.Candi
 
 func (rs CandidatesResources) deleteCandidates(c fuego.ContextNoBody) (any, error) {
 	return rs.CandidatesService.DeleteCandidates(c.Context(), c.PathParam("id"))
+}
+
+func (rs CandidatesResources) getCandidateAndJobRoles(c fuego.ContextNoBody) ([]models.CandidateAndJobRoles, error) {
+	// Get pagination from query params
+	limit := c.QueryParamInt("limit")
+	page := c.QueryParamInt("page")
+	nameSearch := c.QueryParam("name")
+
+	return rs.CandidatesService.CandidateAndJobRoles(c.Context(), nameSearch, limit, page)
 }

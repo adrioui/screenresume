@@ -2,6 +2,7 @@ package services
 
 import (
 	"context"
+	"database/sql"
 	"fmt"
 	"screenresume/internal/models"
 	"screenresume/internal/repositories"
@@ -16,6 +17,7 @@ type CandidatesService interface {
 	GetCandidates(ctx context.Context, id string) (models.Candidates, error)
 	UpdateCandidates(ctx context.Context, id string, input models.CandidatesUpdate) (models.Candidates, error)
 	DeleteCandidates(ctx context.Context, id string) (any, error)
+	CandidateAndJobRoles(ctx context.Context, nameSearch string, limit int, page int) ([]models.CandidateAndJobRoles, error)
 }
 
 type CandidateServiceImpl struct {
@@ -45,6 +47,14 @@ func toCandidatesCreateParams(input models.CandidatesCreate) repositories.Create
 		Phone:    input.Phone,
 		FileID:   uuid.MustParse(input.FileID),
 		Status:   input.Status,
+	}
+}
+
+func toCandidateAndJobRolesDTO(dbCandidate repositories.CandidateAndJobRolesRow) models.CandidateAndJobRoles {
+	return models.CandidateAndJobRoles{
+		Candidate: toCandidatesDTO(dbCandidate.Candidate),
+		JobRole:   toJobRolesDTO(dbCandidate.JobRole),
+		AppliedAt: dbCandidate.AppliedAt,
 	}
 }
 
@@ -121,4 +131,21 @@ func (s *CandidateServiceImpl) DeleteCandidates(ctx context.Context, id string) 
 	}
 
 	return nil, nil
+}
+
+func (s *CandidateServiceImpl) CandidateAndJobRoles(ctx context.Context, nameSearch string, limit int, page int) ([]models.CandidateAndJobRoles, error) {
+	dbCandidates, err := s.store.CandidateAndJobRoles(ctx, repositories.CandidateAndJobRolesParams{
+		NameSearch: sql.NullString{String: nameSearch, Valid: nameSearch != ""},
+		Limitquery: int32(limit),
+		Pagequery:  int32(page),
+	})
+	if err != nil {
+		return nil, fmt.Errorf("failed to get candidate and job roles: %w", err)
+	}
+
+	candidates := make([]models.CandidateAndJobRoles, len(dbCandidates))
+	for i, f := range dbCandidates {
+		candidates[i] = toCandidateAndJobRolesDTO(f)
+	}
+	return candidates, nil
 }

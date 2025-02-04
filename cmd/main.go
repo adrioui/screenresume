@@ -7,6 +7,7 @@ import (
 	"screenresume/pkg/db"
 
 	"github.com/go-fuego/fuego"
+	"github.com/rs/cors"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 )
@@ -65,7 +66,12 @@ func main() {
 	applicationService := services.NewApplicationService(store)
 	applicationController := controller.ApplicationResources{ApplicationService: applicationService}
 
-	s := fuego.NewServer()
+	s := fuego.NewServer(
+		fuego.WithCorsMiddleware(cors.New(cors.Options{
+			AllowedOrigins: []string{"*"},
+			AllowedMethods: []string{"GET", "POST", "PUT", "DELETE"},
+		}).Handler),
+	)
 
 	filesController.Routes(s)
 	jobRolesController.Routes(s)

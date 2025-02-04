@@ -7,9 +7,73 @@ package repositories
 
 import (
 	"context"
+	"database/sql"
+	"time"
 
 	"github.com/google/uuid"
 )
+
+const candidateAndJobRoles = `-- name: CandidateAndJobRoles :many
+select c.id, c.full_name, c.email, c.phone, c.file_id, c.status, c.created_at, c.updated_at, jr.id, jr.title, jr.department_id, jr.level, jr.salary_range, jr.location, jr.is_active, jr.created_at, jr.updated_at, a.applied_at
+from candidates c
+join applications a on c.id = a.candidate_id
+join job_roles jr on a.job_role_id = jr.id
+where jr.is_active = true
+and (c.full_name ilike '%' || $1 || '%' or $1 is null)
+order by case when c.full_name = $1 then 0 else 1 end, c.full_name asc
+limit $3 offset $2
+`
+
+type CandidateAndJobRolesParams struct {
+	NameSearch sql.NullString `json:"name_search"`
+	Pagequery  int32          `json:"pagequery"`
+	Limitquery int32          `json:"limitquery"`
+}
+
+type CandidateAndJobRolesRow struct {
+	Candidate Candidate `json:"candidate"`
+	JobRole   JobRole   `json:"job_role"`
+	AppliedAt time.Time `json:"applied_at"`
+}
+
+func (q *Queries) CandidateAndJobRoles(ctx context.Context, arg CandidateAndJobRolesParams) ([]CandidateAndJobRolesRow, error) {
+	rows, err := q.db.Query(ctx, candidateAndJobRoles, arg.NameSearch, arg.Pagequery, arg.Limitquery)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []CandidateAndJobRolesRow{}
+	for rows.Next() {
+		var i CandidateAndJobRolesRow
+		if err := rows.Scan(
+			&i.Candidate.ID,
+			&i.Candidate.FullName,
+			&i.Candidate.Email,
+			&i.Candidate.Phone,
+			&i.Candidate.FileID,
+			&i.Candidate.Status,
+			&i.Candidate.CreatedAt,
+			&i.Candidate.UpdatedAt,
+			&i.JobRole.ID,
+			&i.JobRole.Title,
+			&i.JobRole.DepartmentID,
+			&i.JobRole.Level,
+			&i.JobRole.SalaryRange,
+			&i.JobRole.Location,
+			&i.JobRole.IsActive,
+			&i.JobRole.CreatedAt,
+			&i.JobRole.UpdatedAt,
+			&i.AppliedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
 
 const createCandidate = `-- name: CreateCandidate :one
 INSERT INTO candidates (
